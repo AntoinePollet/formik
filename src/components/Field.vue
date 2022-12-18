@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, inject, Prop, PropType, ref, toRefs } from 'vue';
+import { defineComponent, inject, PropType } from 'vue';
 
 export default defineComponent({
     props: {
@@ -8,33 +8,38 @@ export default defineComponent({
             default: ''
         },
         as: {
+            type: [Object, String] as PropType<object | string>
+        },
+        type: {
             type: String as PropType<string>
         }
     },
 	setup(props, { emit }) {
         const state: any = inject('state');
-        const { name, as } = props;
+        const { name, as, type } = props;
 
-		return { emit, state, name, as }
+        const inputEvent = (e: any) => {
+            console.log('inputEvent', e)
+            state.values[name] = e.target.value;
+        }
+
+		return { emit, state, name, as, inputEvent }
 	}
 })
 </script>
 
 <template>
-    <input v-if="(as === 'checkbox')" v-model="state.values[name]" type="checkbox" />
-
-    <input v-else-if="(as === 'radio')" v-model="state.values[name]" type="radio" />
-
-    <template v-else-if="(as === 'select')">
-        <select v-model="state.values[name]">
-            <option disabled value="">Please select one</option>
+    <template v-if="as">
+        <component 
+            :is="as" 
+            :value="state.values[name]" 
+            @input="inputEvent" 
+            :name="name" 
+            :type="type ? type : null"
+        >
             <slot></slot>
-        </select>
+        </component>
     </template>
 
-    <template v-else-if="(as === 'textarea')">
-        <textarea v-model="state.values[name]"></textarea>
-    </template>    
-
-    <input v-else v-model="state.values[name]" class="border-slate-200 placeholder-slate-400" />
+    <input v-else v-model="state.values[name]" :type="type" />
 </template>

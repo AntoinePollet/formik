@@ -1,6 +1,6 @@
 <script lang="ts">
-import { defineComponent, PropType, provide, reactive, toRefs, ref } from 'vue';
-
+import { defineComponent, PropType, provide, reactive, ref } from 'vue';
+import { State } from '../interfaces/formikInterfaces';
 export default defineComponent({
     props: {
         initialValues: {
@@ -17,7 +17,7 @@ export default defineComponent({
 
         const isSubmitting = ref<boolean>(false);
 
-		const state = reactive<any>({
+		const state = reactive<State>({
             values: initialValues,
             touched: {},
             errors: {}
@@ -25,7 +25,7 @@ export default defineComponent({
         
         provide('state', state);
 
-        const handleSubmit = () => {
+        const handleSubmit = (): void => {
             isSubmitting.value = true;
             const errors = validate(state.values);
             if (Object.keys(errors).length > 0) {
@@ -36,20 +36,18 @@ export default defineComponent({
             }
 		} 
 
-        const setSubmitting = (value: boolean) => {
+        const setSubmitting = (value: boolean): void => {
             isSubmitting.value = value;
         }
 
-        const reset = () => {
-            // WIP reset state values
-            state.values.forEach((field: any) => {
-                if (typeof state.values[field] === 'string') {
-                    field = '';
-                } else if (typeof state.values[field] === 'boolean') {
-                    field = false;
+        const reset = (): void => {
+            for (let key of Object.keys(state.values)) {
+                if (typeof state.values[key as keyof typeof state.values] === 'string') {
+                    state.values[key] = '';
+                } else if (typeof state.values[key as keyof typeof state.values] === 'boolean') {
+                    state.values[key]  = false;
                 }
-            })
-
+            }
             state.errors = {};
         }
 
@@ -60,7 +58,15 @@ export default defineComponent({
 
 <template>
 	<form @submit.native.prevent="handleSubmit()">
-        {{ state }}
-        <slot :state="state"></slot>
+        <div class="flex">
+            <div class="w-1/2 flex justify-center">
+                <pre>
+                    {{ state }}
+                </pre>
+            </div>
+            <div>
+                <slot :state="state"></slot>
+            </div>
+        </div>
     </form>
 </template>
