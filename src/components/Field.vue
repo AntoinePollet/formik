@@ -18,9 +18,11 @@ export default defineComponent({
         const state: any = inject('state');
         const { name, as, type } = props;
 
-        const inputEvent = (e: any) => {
-            console.log('inputEvent', e)
-            state.values[name] = e.target.value;
+        const inputEvent = (e: InputEvent): void => {
+            const target = e.target as HTMLInputElement;
+            if (target != null) {
+                state.values[name] = target.value;
+            }
         }
 
 		return { emit, state, name, as, inputEvent }

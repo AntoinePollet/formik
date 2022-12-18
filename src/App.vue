@@ -92,7 +92,12 @@ export default defineComponent({
 
 <template>
 	<div>
-		<Formik :initialValues="{ hello: '', email: '', password: '', checked: false, comment: '', select: '', captcha: {} }" :validate="validate" @submitData="submit">
+		<Formik 
+			:initialValues="{ hello: '', email: '', password: '', checked: false, comment: '', select: '', captcha: {} }" 
+			:validate="validate" 
+			@submitData="submit"
+			class="pt-5"
+		>
 			<template v-slot="{ state, handleSubmit }"> 
 				<div class="flex flex-col gap-y-2">
 					<div>
